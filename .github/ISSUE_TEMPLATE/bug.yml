@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a problem in scripts or documentation.
+title: '[bug] '
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Expected result, actual result and reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Board, BIOS, Windows, PowerShell and ITK versions
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Sanitized output
+      description: 'Remove usernames, serial numbers, credentials and customer paths.'
+      render: text

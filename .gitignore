@@ -1,0 +1,24 @@
+# Local firmware data and customer reports must stay local.
+backups/
+ITK_lettura_*/
+VT_x_*/
+tokens-original*.ini
+change.ini
+restore.ini
+operation.json
+machine.json
+*.log
+*.bio
+*.rom
+*.bin
+*.exe
+*.msi
+*.dll
+*.sys
+*.vdi
+*.vmdk
+*.qcow2
+*.iso
+.DS_Store
+Thumbs.db
+*.zip

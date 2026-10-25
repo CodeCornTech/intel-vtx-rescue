@@ -1,19 +1,21 @@
 name: Offline checks
 on:
   push:
+    branches: [main]
   pull_request:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   powershell:
+    name: Windows PowerShell 5.1
     runs-on: windows-latest
-    strategy:
-      matrix:
-        shell: [powershell, pwsh]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Parse PowerShell source
-        shell: ${{ matrix.shell }}
+        shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           Get-ChildItem scripts,tests -Filter '*.ps1' -Recurse | ForEach-Object {
@@ -22,7 +24,24 @@ jobs:
             if ($parseErrors.Count) { throw ($parseErrors | Out-String) }
           }
       - name: Test token boundaries and platform guards without ITK
-        shell: ${{ matrix.shell }}
+        shell: powershell
+        run: ./tests/Test-Offline.ps1
+  pwsh:
+    name: PowerShell Core
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Parse PowerShell source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Get-ChildItem scripts,tests -Filter '*.ps1' -Recurse | ForEach-Object {
+            $tokens = $null; $parseErrors = $null
+            [Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$parseErrors) | Out-Null
+            if ($parseErrors.Count) { throw ($parseErrors | Out-String) }
+          }
+      - name: Test token boundaries and platform guards without ITK
+        shell: pwsh
         run: ./tests/Test-Offline.ps1
   bootstrap:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository

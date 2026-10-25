@@ -25,7 +25,8 @@ jobs:
         shell: ${{ matrix.shell }}
         run: ./tests/Test-Offline.ps1
   bootstrap:
-    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, macOS, X64]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: bash -n scripts/repo-init.sh
